@@ -32,7 +32,7 @@ public class OdometryCalibration extends LinearOpMode {
     String rfName = "right_front_drive", rbName = "right_back_drive", lfName = "left_front_drive", lbName = "left_back_drive";
     String verticalLeftEncoderName = rbName, verticalRightEncoderName = lfName, horizontalLeftEncoderName = rfName, horizontalRightEncoderName = lbName;
 
-    final double PIVOT_SPEED = 0.5;
+    final double PIVOT_SPEED = 0.8;
 
     //The amount of encoder ticks for each inch the robot moves. THIS WILL CHANGE FOR EACH ROBOT AND NEEDS TO BE UPDATED HERE
     final double COUNTS_PER_INCH = 307.699557;
@@ -69,12 +69,19 @@ public class OdometryCalibration extends LinearOpMode {
         //Odometry System Calibration Init Complete
         telemetry.addData("Odometry System Calibration Status", "Init Complete");
         telemetry.update();
+        timer.reset();
+        while(timer.milliseconds() < 5000 && opModeIsActive()){
+            telemetry.addData("Waiting...", timer.milliseconds());
+            telemetry.update();
+        }
+
 
         waitForStart();
 
         //Begin calibration (if robot is unable to pivot at these speeds, please adjust the constant at the top of the code
         while(getZAngle() < 90 && opModeIsActive()){
             right_front.setPower(-PIVOT_SPEED);
+
             right_back.setPower(-PIVOT_SPEED);
             left_front.setPower(PIVOT_SPEED);
             left_back.setPower(PIVOT_SPEED);
@@ -175,10 +182,10 @@ public class OdometryCalibration extends LinearOpMode {
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        left_front.setDirection(DcMotorSimple.Direction.REVERSE);
-        right_front.setDirection(DcMotorSimple.Direction.REVERSE);
+        left_front.setDirection(DcMotorSimple.Direction.FORWARD);
+        right_front.setDirection(DcMotorSimple.Direction.FORWARD);
         right_back.setDirection(DcMotorSimple.Direction.REVERSE);
-        left_back.setDirection(DcMotorSimple.Direction.REVERSE);
+        left_back.setDirection(DcMotorSimple.Direction.FORWARD);
 
         telemetry.addData("Status", "Hardware Map Init Complete");
         telemetry.update();
