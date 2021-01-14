@@ -28,12 +28,16 @@ public class ShooterBeltSpeedVelocity implements Runnable{
 
     private String mode = "IDLE";
 
-    public double pValue = 0.001;
+    public double pValue = 0.4;
     public double iValue = 0.01;
+    public double dValue = 0.02;
+
     public double sumErrror = 0.00;
 
     public double cruisingPower = 0.9;
     public double lastPower = cruisingPower;
+
+    public miniPID pid;
 
 
 
@@ -45,6 +49,14 @@ public class ShooterBeltSpeedVelocity implements Runnable{
         this.shooterMotor = shooter.getShooterMotor();
 
         sleepTime = threadSleepDelay;
+
+        pid = new miniPID(pValue, iValue, dValue);
+        pid.setOutputLimits(1);
+        //pid.setMaxIOutput(1);
+        //pid.setOutputRampRate(3);
+        //pid.setOutputFilter(.3);
+        pid.setSetpointRange(0.8);
+
 
     }
 
@@ -72,8 +84,12 @@ public class ShooterBeltSpeedVelocity implements Runnable{
         this.mode = "SHOOTING";
     }
 
-    public void  notShooting() {
+
+
+
+    public void  notShooting( double targetSpeed) {
         this.mode = "IDLE";
+        this.targetSpeed = targetSpeed;
     }
 
 
@@ -97,23 +113,47 @@ public class ShooterBeltSpeedVelocity implements Runnable{
         lastPower = cruisingPower;
     }
 
-
     /**
      * Runs the thread
+
+     public void run_old() {
+     while(isRunning) {
+     velocityUpdate();
+     if (this.mode.equals("SHOOTING")) {
+     // DO PID HERE
+     double vError = currentSpeed - targetSpeed;
+     sumErrror= sumErrror + vError;
+     double newPower = cruisingPower - pValue*vError -iValue *sumErrror;
+     if (newPower > 1.0)
+     newPower = 1.0;
+     shooterMotor.setPower(newPower);
+     lastPower = newPower;
+
+     }
+     try {
+     Thread.sleep(sleepTime);
+     } catch (InterruptedException e) {
+     e.printStackTrace();
+     }
+     }
+     }
      */
+
     @Override
     public void run() {
         while(isRunning) {
             velocityUpdate();
-            if (this.mode.equals("SHOOTING")) {
+            if (true/*this.mode.equals("SHOOTING")*/) {
                 // DO PID HERE
-                double vError = currentSpeed - targetSpeed;
-                sumErrror= sumErrror + vError;
-                double newPower = cruisingPower - pValue*vError -iValue *sumErrror;
-                if (newPower > 1.0)
-                    newPower = 1.0;
+
+                //double newPower=cruisingPower+pid.getOutput(currentSpeed, targetSpeed);
+                //double newPower=cruisingPower;
+                double newPower = targetSpeed;
                 shooterMotor.setPower(newPower);
                 lastPower = newPower;
+
+
+
 
             }
             try {
@@ -123,4 +163,7 @@ public class ShooterBeltSpeedVelocity implements Runnable{
             }
         }
     }
+
+
 }
+

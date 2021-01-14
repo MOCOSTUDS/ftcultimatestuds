@@ -107,6 +107,13 @@ public class BasicOpMode_Iterative extends OpMode
      */
     @Override
     public void loop() {
+
+
+
+
+
+
+
         vertical= -1.0*gamepad1.right_stick_y;
         horizontal = gamepad1.right_stick_x;
         pivot = gamepad1.left_stick_x;

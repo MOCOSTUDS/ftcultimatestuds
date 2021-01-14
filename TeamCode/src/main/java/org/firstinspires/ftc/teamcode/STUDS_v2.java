@@ -63,10 +63,10 @@ public class STUDS_v2 extends OpMode
     private DcMotor elevator = null;
     private DcMotor shooterBelt = null;
     private DcMotor intakeBelt = null;
-    private DcMotor intakeWheels = null;
+    public DcMotor intakeWheels = null;
     private Servo servoClaw = null;
-    private Servo servoIntake = null;
-    private Servo servoLoop = null;
+    public Servo servoIntake = null;
+    public Servo servoLoop = null;
     private float armAngle = 0;
     private DcMotor arm = null;
     double vertical,horizontal,pivot = 0.0;
@@ -100,7 +100,7 @@ public class STUDS_v2 extends OpMode
         arm  = hardwareMap.get(DcMotor.class, "arm");
         elevator.setDirection(DcMotor.Direction.FORWARD);
         shooterBelt.setDirection(DcMotor.Direction.FORWARD);
-        //intakeBelt.setDirection(DcMotor.Direction.FORWARD);
+         //intakeBelt.setDirection(DcMotor.Direction.FORWARD);
         intakeWheels.setDirection(DcMotor.Direction.FORWARD);
         arm.setDirection(DcMotorSimple.Direction.FORWARD);
         servoClaw  = hardwareMap.servo.get("servo_claw");

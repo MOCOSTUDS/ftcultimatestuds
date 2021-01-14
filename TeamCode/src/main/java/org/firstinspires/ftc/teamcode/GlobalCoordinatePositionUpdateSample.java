@@ -18,10 +18,17 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
     DcMotor verticalRight, verticalLeft, horizontal;
 
     //The amount of encoder ticks for each inch the robot moves. This will change for each robot and needs to be changed here
-    final double COUNTS_PER_INCH = 307.699557;
+    //final double COUNTS_PER_INCH = 307.699557;
+    final double COUNTS_PER_INCH = 307.699557/0.71803066;
 
     //Hardware map names for the encoder wheels. Again, these will change for each robot and need to be updated below
-    String verticalLeftEncoderName = "rf", verticalRightEncoderName = "lf", horizontalEncoderName = "lb";
+    //String verticalLeftEncoderName = "rf", verticalRightEncoderName = "lf", horizontalEncoderName = "lb";
+    String rfName = "right_front_drive", rbName = "right_back_drive", lfName = "left_front_drive", lbName = "left_back_drive";
+    String verticalLeftEncoderName = rbName, verticalRightEncoderName = lfName, horizontalEncoderName = rfName, horizontalRightEncoderName = lbName;
+
+    //String rfName = "right_front_drive", rbName = "right_back_drive", lfName = "left_front_drive", lbName = "left_back_drive";
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
