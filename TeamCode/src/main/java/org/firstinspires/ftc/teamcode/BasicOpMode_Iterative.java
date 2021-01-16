@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -72,16 +73,18 @@ public class BasicOpMode_Iterative extends OpMode
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftRearDrive  = hardwareMap.get(DcMotor.class, "left_rear_drive");
+        leftRearDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightRearDrive = hardwareMap.get(DcMotor.class, "right_rear_drive");
+        rightRearDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftRearDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        //leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -114,17 +117,17 @@ public class BasicOpMode_Iterative extends OpMode
 
 
 
-        vertical= -1.0*gamepad1.right_stick_y;
-        horizontal = gamepad1.right_stick_x;
-        pivot = gamepad1.left_stick_x;
+        vertical= -1.0*gamepad1.left_stick_y;
+        horizontal = gamepad1.left_stick_x;
+        pivot = gamepad1.right_stick_x;
         //rightFrontPower = -1.0*pivot + ( vertical - horizontal);
         //rightRearPower = -1.0*pivot + ( vertical + horizontal);
         //leftFrontPower = pivot + ( vertical + horizontal);
         //leftRearPower = pivot + ( vertical - horizontal);
-        rightFrontPower = -1.0*pivot + ( vertical + horizontal);
-        rightRearPower = -1.0*pivot + ( vertical - horizontal);
-        leftFrontPower = pivot + ( vertical - horizontal);
-        leftRearPower = pivot + ( vertical + horizontal);
+        rightFrontPower = -2.0*pivot + ( vertical + horizontal);
+        rightRearPower = -2.0*pivot + ( vertical - horizontal);
+        leftFrontPower = 2.0*pivot + ( vertical - horizontal);
+        leftRearPower = 2.0*pivot + ( vertical + horizontal);
 
 
         leftFrontPower    = Range.clip(leftFrontPower, -1.0, 1.0) ;

@@ -22,42 +22,36 @@ public class ShooterBeltSpeedVelocity implements Runnable{
     double shooterEncoderValue;
     double lastShooterEncoderValue = 0.0;
     long lastMeasuredTime = 0;
-    private double currentSpeed;
-    private double lastSpeed;
+
     private double targetSpeed;
+    private double currentSpeed;
+    private double lastPower;
+    private long lastDelta;
 
     private String mode = "IDLE";
 
-    public double pValue = 0.4;
-    public double iValue = 0.01;
-    public double dValue = 0.02;
-
-    public double sumErrror = 0.00;
+    public double pValue = 0.1;
+    public double iValue = 0.02;
+    public double dValue = 0.00;
 
     public double cruisingPower = 0.9;
-    public double lastPower = cruisingPower;
+    public double reversePower = -0.3;
 
     public miniPID pid;
-
-
 
     //Sleep time interval (milliseconds) for the position update thread
     private int sleepTime;
 
+    public long getLastTime() {
+        return lastDelta;
+    }
 
     public ShooterBeltSpeedVelocity(StudShooter shooter, int threadSleepDelay){
         this.shooterMotor = shooter.getShooterMotor();
-
         sleepTime = threadSleepDelay;
-
         pid = new miniPID(pValue, iValue, dValue);
         pid.setOutputLimits(1);
-        //pid.setMaxIOutput(1);
-        //pid.setOutputRampRate(3);
-        //pid.setOutputFilter(.3);
         pid.setSetpointRange(0.8);
-
-
     }
 
     /**
@@ -67,10 +61,10 @@ public class ShooterBeltSpeedVelocity implements Runnable{
         long currentTime = System.currentTimeMillis();
         //Get Current Positions
         shooterEncoderValue = shooterMotor.getCurrentPosition();
-        lastSpeed = currentSpeed;
         if (lastShooterEncoderValue > 0) {
             double change = shooterEncoderValue - lastShooterEncoderValue;
-            double deltaT = (currentTime - lastMeasuredTime) ;
+            long deltaT = (currentTime - lastMeasuredTime) ;
+            lastDelta = deltaT;
             currentSpeed = change/deltaT;
         }
         lastShooterEncoderValue = shooterEncoderValue;
@@ -80,18 +74,8 @@ public class ShooterBeltSpeedVelocity implements Runnable{
     public void  maintainSpeedModeStart(double targetSpeed) {
         this.targetSpeed = targetSpeed;
         // reset PI Params
-        sumErrror=0.0;
         this.mode = "SHOOTING";
     }
-
-
-
-
-    public void  notShooting( double targetSpeed) {
-        this.mode = "IDLE";
-        this.targetSpeed = targetSpeed;
-    }
-
 
     /**
      * Returns the robot's global x coordinate
@@ -108,53 +92,37 @@ public class ShooterBeltSpeedVelocity implements Runnable{
         isRunning = false;
         lastShooterEncoderValue = 0.0;
         lastMeasuredTime = 0;
-
-        shooterMotor.setPower(cruisingPower);
-        lastPower = cruisingPower;
+        mode = "IDLE";
     }
 
-    /**
-     * Runs the thread
+    public void setBackMode() {
+        mode = "BACKWARDS";
+    }
 
-     public void run_old() {
-     while(isRunning) {
-     velocityUpdate();
-     if (this.mode.equals("SHOOTING")) {
-     // DO PID HERE
-     double vError = currentSpeed - targetSpeed;
-     sumErrror= sumErrror + vError;
-     double newPower = cruisingPower - pValue*vError -iValue *sumErrror;
-     if (newPower > 1.0)
-     newPower = 1.0;
-     shooterMotor.setPower(newPower);
-     lastPower = newPower;
-
-     }
-     try {
-     Thread.sleep(sleepTime);
-     } catch (InterruptedException e) {
-     e.printStackTrace();
-     }
-     }
-     }
-     */
 
     @Override
     public void run() {
         while(isRunning) {
             velocityUpdate();
-            if (true/*this.mode.equals("SHOOTING")*/) {
+            if (mode.equals("SHOOTING")) {
+                //shooterMotor.setPower(cruisingPower);
                 // DO PID HERE
-
-                //double newPower=cruisingPower+pid.getOutput(currentSpeed, targetSpeed);
+                double newPower=cruisingPower+pid.getOutput(currentSpeed, targetSpeed);
                 //double newPower=cruisingPower;
-                double newPower = targetSpeed;
+                //double newPower = targetSpeed;
                 shooterMotor.setPower(newPower);
                 lastPower = newPower;
-
-
-
-
+            } else if (mode.equals("REVERSE")) {
+                if (currentSpeed < .1) {
+                    shooterMotor.setPower(reversePower);
+                    lastPower = reversePower;
+                } else {
+                    shooterMotor.setPower(0.0);
+                    lastPower = reversePower;
+                }
+            } else if (mode.equals("IDLE")) {
+                shooterMotor.setPower(0.0);
+                lastPower = 0.0;
             }
             try {
                 Thread.sleep(sleepTime);

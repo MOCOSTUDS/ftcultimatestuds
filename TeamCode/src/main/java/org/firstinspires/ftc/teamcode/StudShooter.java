@@ -18,8 +18,9 @@ public class StudShooter {
         shooterBelt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooterBelt.setDirection(DcMotor.Direction.FORWARD);
         shooterBelt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
+        //shooterBelt.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         servoClaw  = hardwareMap.servo.get("servo_claw");
+        servoClaw.setPosition(0.3);
     }
 
     public DcMotor getShooterMotor() {
@@ -33,5 +34,18 @@ public class StudShooter {
     public void stopShooter() {
         shooterBelt.setPower(0.0);
     }
+
+    public void setClaw(double newVal) {
+        servoClaw.setPosition(newVal);
+    }
+
+    public void setClawOpen() {
+        servoClaw.setPosition(0.3);
+    }
+
+    public void setClawShoot() {
+        servoClaw.setPosition(1.0);
+    }
+
 
 }

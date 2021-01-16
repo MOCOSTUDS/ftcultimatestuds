@@ -24,10 +24,11 @@ public class ExampleOpmode extends LinearOpMode {
         shooterThread.start();
 
         while (opModeIsActive()) {
-            telemetry.addData("Velocity", shooterUpdate.returnVelocity());
+        /*    telemetry.addData("Velocity", shooterUpdate.returnVelocity());
             telemetry.addData("Power", shooterUpdate.returnPower());
             telemetry.addData("Thread Active", shooterThread.isAlive());
             telemetry.addData("switch0", studbot.digIn0.getState());
+            telemetry.addData("switch1=", studbot.digIn1.getState());
             telemetry.addData("elevator=", studbot.elevator.getCurrentPosition() - studbot.elevator_zero_position);
 
             telemetry.update();
@@ -35,13 +36,13 @@ public class ExampleOpmode extends LinearOpMode {
             if (studbot.elevator.getCurrentPosition() - studbot.elevator_zero_position >2000) {
                 shooterUpdate.maintainSpeedModeStart(0.9);
             }else{
-                shooterUpdate.notShooting(-0.3);
+                //shooterUpdate.notShooting(-0.3);
 
             }
 
             studbot.servoLoop.setPower(0);
 
-
+/*
             if (gamepad2.right_trigger > 0.2) {
                 studbot.servoClaw.setPosition(1);
             } else {
@@ -55,9 +56,11 @@ public class ExampleOpmode extends LinearOpMode {
                 studbot.servoIntake.setPower(1);
                 studbot.intakeBelt.setPower(-1);
                 studbot.intakeWheels.setPower(0.5);
-            }
-            if (gamepad2.b) {
+            } */
+           /* if (gamepad2.back) {
                 studbot.init_elevator();
+
+                studbot.init_arm();
             }
             if(gamepad1.dpad_down) studbot.arm.setPower(0.5);
             else if(gamepad1.dpad_up) studbot.arm.setPower(-0.5);
