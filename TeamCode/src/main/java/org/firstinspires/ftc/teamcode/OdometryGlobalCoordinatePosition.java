@@ -25,6 +25,7 @@ public class OdometryGlobalCoordinatePosition implements Runnable{
     //Algorithm constants
     private double robotEncoderWheelDistance;
     private double horizontalEncoderTickPerDegreeOffset;
+    private double localTickCount;
 
     //Sleep time interval (milliseconds) for the position update thread
     private int sleepTime;
@@ -44,11 +45,27 @@ public class OdometryGlobalCoordinatePosition implements Runnable{
      * @param horizontalEncoder horizontal odometry encoder, perpendicular to the other two odometry encoder wheels
      * @param threadSleepDelay delay in milliseconds for the GlobalPositionUpdate thread (50-75 milliseconds is suggested)
      */
-    public OdometryGlobalCoordinatePosition(DcMotor verticalEncoderLeft, DcMotor verticalEncoderRight, DcMotor horizontalEncoder, double COUNTS_PER_INCH, int threadSleepDelay){
+    public OdometryGlobalCoordinatePosition(DcMotor verticalEncoderLeft, DcMotor verticalEncoderRight,
+                                            DcMotor horizontalEncoder, double COUNTS_PER_INCH, int threadSleepDelay){
         this.verticalEncoderLeft = verticalEncoderLeft;
         this.verticalEncoderRight = verticalEncoderRight;
         this.horizontalEncoder = horizontalEncoder;
         sleepTime = threadSleepDelay;
+        localTickCount = COUNTS_PER_INCH;
+
+        robotEncoderWheelDistance = Double.parseDouble(ReadWriteFile.readFile(wheelBaseSeparationFile).trim()) * COUNTS_PER_INCH;
+        this.horizontalEncoderTickPerDegreeOffset = Double.parseDouble(ReadWriteFile.readFile(horizontalTickOffsetFile).trim());
+
+    }
+
+
+    public void init(DcMotor verticalEncoderLeft, DcMotor verticalEncoderRight,
+                                            DcMotor horizontalEncoder, double COUNTS_PER_INCH, int threadSleepDelay){
+        this.verticalEncoderLeft = verticalEncoderLeft;
+        this.verticalEncoderRight = verticalEncoderRight;
+        this.horizontalEncoder = horizontalEncoder;
+        sleepTime = threadSleepDelay;
+        localTickCount = COUNTS_PER_INCH;
 
         robotEncoderWheelDistance = Double.parseDouble(ReadWriteFile.readFile(wheelBaseSeparationFile).trim()) * COUNTS_PER_INCH;
         this.horizontalEncoderTickPerDegreeOffset = Double.parseDouble(ReadWriteFile.readFile(horizontalTickOffsetFile).trim());
@@ -67,7 +84,8 @@ public class OdometryGlobalCoordinatePosition implements Runnable{
         double rightChange = verticalRightEncoderWheelPosition - previousVerticalRightEncoderWheelPosition;
 
         //Calculate Angle
-        changeInRobotOrientation = (leftChange - rightChange) / (robotEncoderWheelDistance);
+        //changeInRobotOrientation = (leftChange - rightChange) / (robotEncoderWheelDistance);
+        changeInRobotOrientation = -1.0*(leftChange - rightChange) / (robotEncoderWheelDistance);
         robotOrientationRadians = ((robotOrientationRadians + changeInRobotOrientation));
 
         //Get the components of the motion
@@ -93,11 +111,15 @@ public class OdometryGlobalCoordinatePosition implements Runnable{
      */
     public double returnXCoordinate(){ return robotGlobalXCoordinatePosition; }
 
+    public double returnXCoordinateInInches(){ return robotGlobalXCoordinatePosition/localTickCount; }
+
     /**
      * Returns the robot's global y coordinate
      * @return global y coordinate
      */
     public double returnYCoordinate(){ return robotGlobalYCoordinatePosition; }
+
+    public double returnYCoordinateInInches(){ return robotGlobalYCoordinatePosition/localTickCount; }
 
     /**
      * Returns the robot's global orientation

@@ -67,7 +67,7 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
          * OpMode Begins Here
          * *****************
          */
-
+        //final double COUNTS_PER_INCH = 307.699557*121./48.*(180./72.);
         //Create and start GlobalCoordinatePosition thread to constantly update the global coordinate positions\
         OdometryGlobalCoordinatePosition globalPositionUpdate = new OdometryGlobalCoordinatePosition(verticalLeft, verticalRight, horizontal, COUNTS_PER_INCH, 75);
         Thread positionThread = new Thread(globalPositionUpdate);
@@ -79,6 +79,13 @@ public class GlobalCoordinatePositionUpdateSample extends LinearOpMode {
             telemetry.addData("Y Position", globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH);
             telemetry.addData("Orientation (Degrees)", globalPositionUpdate.returnOrientation());
             telemetry.addData("Thread Active", positionThread.isAlive());
+
+            telemetry.addData("vertical left", verticalLeft.getCurrentPosition());
+            telemetry.addData("vertical right", verticalRight.getCurrentPosition());
+            telemetry.addData("horizontal", horizontal.getCurrentPosition());
+
+
+
             telemetry.update();
         }
 

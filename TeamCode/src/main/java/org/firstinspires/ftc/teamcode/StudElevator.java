@@ -29,7 +29,7 @@ public class StudElevator {
         }
         //going up
         elevator.setPower(-0.4);
-        while(!digIn0.getState()) {
+        while(digIn0.getState()) {
             elevator.setPower(-0.4);
         }
         elevator.setPower(0);
@@ -37,21 +37,25 @@ public class StudElevator {
     }
 
     public int getElevatorPosition() {
+
         return elevator.getCurrentPosition();
     }
 
     public boolean readyToShoot() {
-        if (elevator.getCurrentPosition() - elevator_zero_position >2000)
+        if (elevator.getCurrentPosition() - elevator_zero_position >2300) //previous number was 1800
             return true;
         return false;
     }
 
     public void moveElevator( double powerVal) {
-        if(digIn0.getState()== true ||  Math.abs(powerVal) < 0.1) {
+        if (digIn0.getState() == false && powerVal < 0) {
             elevator.setPower(0);
-        }else{
+        } else if (Math.abs(powerVal) < 0.1) {
+            elevator.setPower(0);
+        } else {
             elevator.setPower(powerVal);
         }
     }
+
 }
 

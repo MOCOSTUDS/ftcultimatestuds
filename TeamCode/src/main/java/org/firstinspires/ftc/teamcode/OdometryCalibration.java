@@ -35,7 +35,7 @@ public class OdometryCalibration extends LinearOpMode {
     final double PIVOT_SPEED = 0.8;
 
     //The amount of encoder ticks for each inch the robot moves. THIS WILL CHANGE FOR EACH ROBOT AND NEEDS TO BE UPDATED HERE
-    final double COUNTS_PER_INCH = 307.699557;
+    final double COUNTS_PER_INCH = 307.699557*48/121*(33./24.)*(90./14.);
 
     ElapsedTime timer = new ElapsedTime();
 
@@ -138,6 +138,7 @@ public class OdometryCalibration extends LinearOpMode {
             telemetry.addData("Horizontal Position", horizontal);
             telemetry.addData("Vertical Encoder Offset", verticalEncoderTickOffsetPerDegree);
 
+
             //Update values
             telemetry.update();
         }
@@ -185,7 +186,7 @@ public class OdometryCalibration extends LinearOpMode {
         left_front.setDirection(DcMotorSimple.Direction.FORWARD);
         right_front.setDirection(DcMotorSimple.Direction.FORWARD);
         right_back.setDirection(DcMotorSimple.Direction.REVERSE);
-        left_back.setDirection(DcMotorSimple.Direction.FORWARD);
+        left_back.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Hardware Map Init Complete");
         telemetry.update();
