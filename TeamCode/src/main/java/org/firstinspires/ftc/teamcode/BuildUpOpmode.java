@@ -46,6 +46,7 @@ public class BuildUpOpmode extends LinearOpMode {
 
         //shooterUpdate.maintainSpeedModeStart(0.9);
         studbot.getIntake().stopAll();
+        studbot.moveToShoot(3650);
         while (opModeIsActive()) {
             if (gamepad2.right_trigger > 0.2) {
                 studbot.getShooter().setClawShoot();
@@ -142,36 +143,56 @@ public class BuildUpOpmode extends LinearOpMode {
 
                 studbot.arm.dropBobber();
 
-                studbot.simpleMove(35,65,-90);
-
-                studbot.accuratePivot(8);
-                studbot.moveToShoot(3730);
+                studbot.simpleMove(15,63,-90); //previous y was 60
+                studbot.accuratePivot(10);
+                //studbot.moveToShoot(3760); // previous was 3730
                 int i;
-                for (i = 0; i<4; i++) {
+                for (i = 0; i<3; i++) {
                     studbot.getShooter().setClawShoot();
                     Thread.sleep(1000);
                     studbot.getShooter().setClawOpen();
                     Thread.sleep(1000);
                     studbot.getIntake().setFeed();
                 }
-                //studbot.simplePivot(45);
-                //studbot.simplePivot(-90);
-                studbot.accuratePivot(-140);
+
+                /*
+                telemetry.addData("imuAngle", studbot.getIMU().getZAngle());
+                telemetry.update();
+
+                Thread.sleep(10000);
+*/
+
+                studbot.getIntake().setBack();
+                studbot.accuratePivot(170-360);
+                //studbot.accuratePivot(150);
+/*
+                telemetry.addData("imuAngle", studbot.getIMU().getZAngle());
+                telemetry.update();
+
+                Thread.sleep(10000);
+*/
+
                 studbot.moveToPickup();
-                studbot.simpleTankMove(6,1);
+                studbot.simpleTankMove(10, 0.8);
+
+                //studbot.accuratePivot(-140);
+
+                //studbot.simpleTankMove(6,1);
                 studbot.getIntake().setFeed();
                 studbot.simpleTankMove(25,0.3);
                 studbot.simpleTankMove(31,-0.3);
                 studbot.moveToShoot(3730);
-                studbot.accuratePivot(0);
-                for (i = 0; i<4; i++) {
+                studbot.accuratePivot(15);
+                for (i = 0; i<3; i++) {
                     studbot.getShooter().setClawShoot();
-                    Thread.sleep(1000);
+                    Thread.sleep(800);
                     studbot.getShooter().setClawOpen();
-                    Thread.sleep(1000);
+                    Thread.sleep(800);
                     studbot.getIntake().setFeed();
                 }
-                studbot.simpleTankMove(15,1);
+                studbot.simpleTankMove(8,1);
+
+
 
                 //studbot.simplePivot(85);
 

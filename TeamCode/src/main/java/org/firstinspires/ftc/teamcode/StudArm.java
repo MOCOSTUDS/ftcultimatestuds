@@ -59,7 +59,7 @@ public class StudArm {
     }
 
     public boolean readyToDrop() {
-        if (arm.getCurrentPosition() - arm_zero_position > 500)
+        if (arm.getCurrentPosition() - arm_zero_position > 700)
             return true;
         return false;
     }
@@ -129,9 +129,36 @@ public class StudArm {
 
     }
     public void dropBobber(){
-        moveToDrop();
-        openLoop();
-        moveToSwitch();
+        // set power to open arm
+        servoLoop.setPower(1);
+        long startTime = System.currentTimeMillis();
+        long currTime = startTime;
+        arm.setPower(0.2);
+        while (!readyToDrop()){
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            currTime = System.currentTimeMillis();
+            if (currTime- startTime> 1800)
+                servoLoop.setPower(0);
+        }
+        arm.setPower(0);
+        currTime = System.currentTimeMillis();
+        long remainingTime = currTime - startTime -1800;
+        if (remainingTime > 0) {
+            try {
+                Thread.sleep(remainingTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        servoLoop.setPower(0);
+
+        //moveToDrop();
+        //openLoop();
+        //moveToSwitch();
     }
 }
 

@@ -127,6 +127,14 @@ public class StudDrive {
         rightRearDrive.setPower(0.0);
     }
 
+    public static double distance(double alpha, double beta) {
+        double phi = Math.abs(beta - alpha) % 360;       // This is either the distance or 360 - distance
+        double distance = phi;
+        if (distance > 180 ) distance -=360;
+        if (distance <=-180) distance +=360;
+        return(distance);
+    }
+
     public void teleDrive(double  vertical, double horizontal, double pivot) {
         double rightFrontPower = -1.0*pivot + ( vertical + horizontal);
         double rightRearPower = -1.0*pivot + ( vertical - horizontal);
@@ -148,7 +156,11 @@ public class StudDrive {
 
         double horizontal= -pidX.getOutput(currentX , targetX);
         double vertical = pidY.getOutput(currentY , targetY);
+
+        //double d = distance(currentHeading,targetHeading);
+        //double pivot = -pidHeading.getOutput(-d, 0);
         double pivot = pidHeading.getOutput(currentHeading, targetHeading);
+
 
         double rightFrontPower = -1.0*pivot + ( vertical + horizontal);
         double rightRearPower = -1.0*pivot + ( vertical - horizontal);

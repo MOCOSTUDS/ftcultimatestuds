@@ -61,12 +61,7 @@ public class StudBot {
 
     public void init(HardwareMap hardwareMap) {
 
-        StudShooter shooter = new StudShooter();
-        StudDrive drive = new StudDrive();
-        StudIntake intake = new StudIntake();
-        StudElevator elevator = new StudElevator();
-        StudArm arm = new StudArm();
-        StudIMU imu = new StudIMU();
+
         drive.init(hardwareMap);
         shooter.init(hardwareMap);
         intake.init(hardwareMap);
@@ -167,6 +162,14 @@ public class StudBot {
     }
     public StudIMU getIMU() {
         return imu;
+    }
+
+
+
+    public static double distance(double alpha, double beta) {
+        double phi = Math.abs(beta - alpha) % 360;       // This is either the distance or 360 - distance
+        double distance = phi > 180 ? 360 - phi : phi;
+        return(distance);
     }
 
 
