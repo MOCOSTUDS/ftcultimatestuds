@@ -15,6 +15,9 @@ public class StudDrive {
     public miniPID pidY;
     public miniPID pidHeading;
 
+    public float heading_correction=0;
+
+
     /*
     public double pValueX = 0.07;
     public double iValueX = 0.00005;
@@ -167,13 +170,26 @@ public class StudDrive {
         double leftFrontPower = 1.0*pivot + ( vertical - horizontal);
         double leftRearPower = 1.0*pivot + ( vertical + horizontal);
 
+
+        double max=1.;
+
+        /*
+
+        if (Math.abs(leftFrontPower)>max) max=Math.abs(leftFrontPower);
+        if (Math.abs(rightFrontPower)>max) max=Math.abs(leftFrontPower);
+        if (Math.abs(leftRearPower)>max) max=Math.abs(leftFrontPower);
+        if (Math.abs(rightRearPower)>max) max=Math.abs(leftFrontPower);
+        setPower(leftFrontPower/max,rightFrontPower/max,rightRearPower/max,leftRearPower/max);
+        */
+
+
         leftFrontPower    = Range.clip(leftFrontPower, -1.0, 1.0) ;
         leftRearPower    = Range.clip(leftRearPower, -1.0, 1.0) ;
         rightFrontPower    = Range.clip(rightFrontPower, -1.0, 1.0) ;
         rightRearPower    = Range.clip(rightRearPower, -1.0, 1.0) ;
-
+        setPower(leftFrontPower/max,rightFrontPower/max,rightRearPower/max,leftRearPower/max);
         // Send calculated power to wheels
-        setPower(leftFrontPower,rightFrontPower,rightRearPower,leftRearPower);
+
 
         return(Math.abs(targetX-currentX)+ (Math.abs(targetY-currentY)) );
     }
@@ -189,6 +205,7 @@ public class StudDrive {
         double leftFrontPower = 1.0*pivot + ( vertical - horizontal);
         double leftRearPower = 1.0*pivot + ( vertical + horizontal);
 
+
         leftFrontPower    = Range.clip(leftFrontPower, -1.0, 1.0) ;
         leftRearPower    = Range.clip(leftRearPower, -1.0, 1.0) ;
         rightFrontPower    = Range.clip(rightFrontPower, -1.0, 1.0) ;
@@ -199,6 +216,30 @@ public class StudDrive {
 
         return(0);
     }
+
+    public double tankMove (double speed,double pivot){
+
+        double horizontal= 0;
+        double vertical = speed;
+        //double pivot = 0;
+
+        double rightFrontPower = -1.0*pivot + ( vertical + horizontal);
+        double rightRearPower = -1.0*pivot + ( vertical - horizontal);
+        double leftFrontPower = 1.0*pivot + ( vertical - horizontal);
+        double leftRearPower = 1.0*pivot + ( vertical + horizontal);
+
+
+        leftFrontPower    = Range.clip(leftFrontPower, -1.0, 1.0) ;
+        leftRearPower    = Range.clip(leftRearPower, -1.0, 1.0) ;
+        rightFrontPower    = Range.clip(rightFrontPower, -1.0, 1.0) ;
+        rightRearPower    = Range.clip(rightRearPower, -1.0, 1.0) ;
+
+        // Send calculated power to wheels
+        setPower(leftFrontPower,rightFrontPower,rightRearPower,leftRearPower);
+
+        return(0);
+    }
+
 
 
 
@@ -226,17 +267,21 @@ public class StudDrive {
     }
 
     public void fastPID(){
-    pValueX = 0.1;
-    iValueX = 0.0005;
-    dValueX = -0.05;
+        pValueX = 0.1;
+        iValueX = 0.0005;
+        dValueX = -0.05;
 
-    pValueY = 0.1;
-    iValueY = 0.0005;
-    dValueY = -0.05;
+        pValueY = 0.1;
+        iValueY = 0.0005;
+        dValueY = -0.05;
 
-    pValueHeading = 0.02;
-    iValueHeading = 0.0005;
-    dValueHeading = 0.0;
+        pValueHeading = 0.08;
+        iValueHeading = 0.0005;
+        dValueHeading = 0.13;
+
+        pidX.setPID(pValueX, iValueX, dValueX);
+        pidY.setPID(pValueY, iValueY, dValueY);
+        pidHeading.setPID(pValueHeading, iValueHeading, dValueHeading);
     }
 
     public void accuratePID(){
@@ -248,11 +293,30 @@ public class StudDrive {
         iValueY = 0.0005;
         dValueY = -0.05;
 
-        pValueHeading = 0.002;
-        iValueHeading = 0.005;
-        dValueHeading = 0.0;
+        pValueHeading = 0.08;
+        iValueHeading = 0.0005;
+        dValueHeading = 0.13;
+        pidX.setPID(pValueX, iValueX, dValueX);
+        pidY.setPID(pValueY, iValueY, dValueY);
+        pidHeading.setPID(pValueHeading, iValueHeading, dValueHeading);
     }
 
+    public void accuratePIDTeleop(){
+        pValueX = 0.1;
+        iValueX = 0.0005;
+        dValueX = -0.05;
+
+        pValueY = 0.1;
+        iValueY = 0.0005;
+        dValueY = -0.05;
+
+        pValueHeading = 0.08;
+        iValueHeading = 0.0005;
+        dValueHeading = 0.13;
+        pidX.setPID(pValueX, iValueX, dValueX);
+        pidY.setPID(pValueY, iValueY, dValueY);
+        pidHeading.setPID(pValueHeading, iValueHeading, dValueHeading);
+    }
 
     public void accuratePIDMove(){
         pValueX = 0.03;

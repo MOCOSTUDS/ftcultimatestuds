@@ -95,6 +95,27 @@ public class StudArm {
         arm.setPower(0);
 
     }
+
+
+    public void moveUp(){
+        arm.setPower(-0.2);
+        while (!inStartingPostion()){
+
+            //telemetry.addData("armPostion", getarmPosition());
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        arm.setPower(0);
+
+    }
+
+
+
+
+
     public void openLoop(){
         servoLoop.setPower(1);
         try {

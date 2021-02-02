@@ -20,7 +20,8 @@ public class BuildUpOpmode extends LinearOpMode {
         waitForStart();
         ShooterBeltSpeedVelocity shooterUpdate = new ShooterBeltSpeedVelocity(studbot.getShooter(), 100);
         Thread shooterThread = new Thread(shooterUpdate);
-        shooterThread.start();
+
+        //shooterThread.start();
 
 
         /**
@@ -46,7 +47,8 @@ public class BuildUpOpmode extends LinearOpMode {
 
         //shooterUpdate.maintainSpeedModeStart(0.9);
         studbot.getIntake().stopAll();
-        studbot.moveToShoot(3650);
+        studbot.getElevator().moveToShoot(3600);
+        //shooterUpdate.stop();
         while (opModeIsActive()) {
             if (gamepad2.right_trigger > 0.2) {
                 studbot.getShooter().setClawShoot();
@@ -66,17 +68,18 @@ public class BuildUpOpmode extends LinearOpMode {
             // handle elevator
             if (studbot.getElevator().readyToShoot()) {
                 shooterUpdate.maintainSpeedModeStart(2.0);
-                studbot.getShooter().servoBlock.setPosition(0.3);
+                studbot.getElevator().servoBlock.setPosition(0.3);
             } else {
                 //shooterUpdate.setBackMode();
                 shooterUpdate.maintainSpeedModeStart(2.0);
-                studbot.getShooter().servoBlock.setPosition(-0.5);
+                studbot.getElevator().servoBlock.setPosition(-0.5);
 
             }
 
+
             if (gamepad1.back){
                 studbot.accuratePivot(10);
-                studbot.moveToShoot(3750);
+                studbot.getElevator().moveToShoot(3750);
                 int i;
                 for (i = 0; i<4; i++) {
                     studbot.getShooter().setClawShoot();
@@ -172,7 +175,7 @@ public class BuildUpOpmode extends LinearOpMode {
                 Thread.sleep(10000);
 */
 
-                studbot.moveToPickup();
+                studbot.getElevator().moveToPickup();
                 studbot.simpleTankMove(10, 0.8);
 
                 //studbot.accuratePivot(-140);
@@ -181,7 +184,7 @@ public class BuildUpOpmode extends LinearOpMode {
                 studbot.getIntake().setFeed();
                 studbot.simpleTankMove(25,0.3);
                 studbot.simpleTankMove(31,-0.3);
-                studbot.moveToShoot(3730);
+                studbot.getElevator().moveToShoot(3730);
                 studbot.accuratePivot(15);
                 for (i = 0; i<3; i++) {
                     studbot.getShooter().setClawShoot();
@@ -198,7 +201,38 @@ public class BuildUpOpmode extends LinearOpMode {
 
                 //studbot.simpleMove(0,12,-90);
 
-            } else {
+            } else if (gamepad2.y) {
+
+
+                studbot.simpleMove(10, 30, -90.0);
+                studbot.simpleMove(5, 107, -90.0);
+                telemetry.addData("X Position", studbot.globalPositionUpdate.returnXCoordinateInInches());
+                telemetry.addData("Y Position", studbot.globalPositionUpdate.returnYCoordinateInInches());
+                studbot.getDrive().setTargetfromOrgin(studbot.globalPositionUpdate.returnXCoordinateInInches(),
+                        studbot.globalPositionUpdate.returnYCoordinateInInches(), -90);
+                telemetry.addData("target x", studbot.getDrive().targetX);
+                telemetry.addData("target y", studbot.getDrive().targetY);
+                telemetry.update();
+                //Thread.sleep(30000);
+                studbot.arm.dropBobber();
+                shooterUpdate.setShootingMode();
+                studbot.getElevator().moveToShoot(3600);
+
+                studbot.simpleMove(5,63,-90); //previous y was 60
+
+                studbot.accuratePivot(20);
+                //studbot.moveToShoot(3760); // previous was 3730
+                int i;
+                for (i = 0; i<3; i++) {
+                    studbot.getShooter().setClawShoot();
+                    Thread.sleep(1000);
+                    studbot.getShooter().setClawOpen();
+                    Thread.sleep(1000);
+                    studbot.getIntake().setFeed();
+                }
+                studbot.simpleTankMove(5,1);
+
+            }else{
 
                 // do drive  old way
                 /*
@@ -242,12 +276,12 @@ public class BuildUpOpmode extends LinearOpMode {
             //telemetry.addData("Power", shooterUpdate.returnPower());
             //telemetry.addData("Thread Active", shooterThread.isAlive());
             //telemetry.addData("switch0", studbot.getElevator().digIn0.getState());
-            telemetry.addData("switch1=", studbot.getArm().digIn1.getState());
+            //telemetry.addData("switch1=", studbot.getArm().digIn1.getState());
             //telemetry.addData("detaltT=", shooterUpdate.getLastTime());
             telemetry.addData("elevator=", studbot.getElevator().getElevatorPosition() - studbot.getElevator().elevator_zero_position);
 
-            //telemetry.addData("X Position", studbot.globalPositionUpdate.returnXCoordinateInInches());
-            //telemetry.addData("Y Position", studbot.globalPositionUpdate.returnYCoordinateInInches());
+            telemetry.addData("X Position", studbot.globalPositionUpdate.returnXCoordinateInInches());
+            telemetry.addData("Y Position", studbot.globalPositionUpdate.returnYCoordinateInInches());
             telemetry.addData("Orientation (Degrees)", studbot.globalPositionUpdate.returnOrientation());
             //telemetry.addData("Thread Active", positionThread.isAlive());
 
@@ -261,8 +295,8 @@ public class BuildUpOpmode extends LinearOpMode {
             //telemetry.addData("servoBlock:", studbot.getShooter().servoBlock);
 
             //telemetry.update();
-            telemetry.addData("iteration: ", studbot.getDrive().iteration);
-            telemetry.addData("ready to shoot",studbot.getElevator().readyToShoot());
+           // telemetry.addData("iteration: ", studbot.getDrive().iteration);
+            //telemetry.addData("ready to shoot",studbot.getElevator().readyToShoot());
             telemetry.update();
 
         }

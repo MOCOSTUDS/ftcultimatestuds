@@ -72,6 +72,7 @@ public class ShooterBeltSpeedVelocity implements Runnable{
     }
 
     public void  maintainSpeedModeStart(double targetSpeed) {
+        isRunning = true;
         this.targetSpeed = targetSpeed;
         // reset PI Params
         this.mode = "SHOOTING";
@@ -96,10 +97,18 @@ public class ShooterBeltSpeedVelocity implements Runnable{
     }
 
     public void setBackMode() {
-        mode = "BACKWARDS";
+        isRunning = true;
+        mode = "REVERSE";
+    }
+    public void setShootingMode() {
+        isRunning = true;
+        mode = "SHOOTING";
     }
 
-
+    public void setIdle() {
+        isRunning = true;
+        mode = "IDLE";
+    }
     @Override
     public void run() {
         while(isRunning) {

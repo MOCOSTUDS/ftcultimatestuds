@@ -185,6 +185,8 @@ public class StudBot {
             myDistance= getDrive().move(globalPositionUpdate.returnXCoordinateInInches(),
                     globalPositionUpdate.returnYCoordinateInInches(),
                     getIMU().getZAngle() + getDrive().headingOffset);
+            //my_sleep(30);
+
         }
         getDrive().stopRobot();
     }
@@ -225,6 +227,28 @@ public class StudBot {
     }
 
 
+    public void simpleTankMove (double in, double speed, double heading) {
+        double myDistance = 0;
+        double startx = globalPositionUpdate.returnXCoordinateInInches();
+        double starty = globalPositionUpdate.returnYCoordinateInInches();
+        double currentx = globalPositionUpdate.returnXCoordinateInInches();
+        double currenty = globalPositionUpdate.returnYCoordinateInInches();
+        while (myDistance<in) {
+
+            currentx = globalPositionUpdate.returnXCoordinateInInches();
+            currenty = globalPositionUpdate.returnYCoordinateInInches();
+            if (heading>getIMU().getZAngle() + getDrive().headingOffset)
+                getDrive().tankMove (speed,0.3);
+            else
+                getDrive().tankMove (speed,-0.3);
+            myDistance = Math.sqrt(
+                    (startx-currentx)*(startx-currentx) +  (starty-currenty)*(starty-currenty));
+
+        }
+        getDrive().stopRobot();
+    }
+
+
     public void simplePivot (double desiredHeading){
 
         getDrive().fastPID();
@@ -250,7 +274,7 @@ public class StudBot {
 
         getDrive().iteration=0;
 
-        while (getDrive().iteration<200) {
+        while (getDrive().iteration<150) {
 
 
             getDrive().pivot(
@@ -259,59 +283,25 @@ public class StudBot {
         getDrive().stopRobot();
     }
 
-    public void moveToShoot(double azum) {
-        //going up
-        getElevator().elevator.setPower(0.8);
-        while (getElevator().elevator.getCurrentPosition() - getElevator().elevator_zero_position < azum) {
 
-            if (getElevator().readyToShoot()) {
-                getShooter().servoBlock.setPosition(0.3);
-            } else {
-                //shooterUpdate.setBackMode();
-                getShooter().servoBlock.setPosition(-0.5);
-            }
+    public void pivotAndElevate (double desiredHeading, float desiredElevation){
+        getDrive().accuratePIDTeleop();
+        getDrive().setTargetfromOrginHeading(desiredHeading+getDrive().heading_correction);
+        getElevator().setTarget(desiredElevation);
 
-            if (getElevator().elevator.getCurrentPosition() - getElevator().elevator_zero_position > azum - 500) {
-                getElevator().elevator.setPower(0.4);
-            }
 
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        getDrive().iteration=0;
+
+        while (getDrive().iteration<100) {
+
+
+            getDrive().pivot(
+                    getIMU().getZAngle() + getDrive().headingOffset);
+            getElevator().movePID();
         }
-        getElevator().elevator.setPower(0);
-
+        getDrive().stopRobot();
     }
 
-    public void moveToPickup(){
-            //going up
-            getElevator().elevator.setPower(-0.8);
-            while (getElevator().elevator.getCurrentPosition() - getElevator().elevator_zero_position > 50) {
-
-                if (getElevator().readyToShoot()) {
-                    getShooter().servoBlock.setPosition(0.3);
-                } else {
-                    //shooterUpdate.setBackMode();
-                    getShooter().servoBlock.setPosition(-0.5);
-                }
-
-                if (getElevator().elevator.getCurrentPosition() - getElevator().elevator_zero_position > 500){
-                    getElevator().elevator.setPower(-0.4);
-                }
-
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-        getElevator().elevator.setPower(0);
-
-    }
 
 
 

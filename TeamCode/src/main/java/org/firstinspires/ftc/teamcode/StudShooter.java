@@ -10,7 +10,7 @@ public class StudShooter {
     private DcMotor shooterBelt = null;
 
     private Servo servoClaw = null;
-    public Servo servoBlock = null;
+
 
     public void init(HardwareMap hardwareMap) {
         elevator  = hardwareMap.get(DcMotor.class, "elevator");
@@ -24,8 +24,7 @@ public class StudShooter {
         servoClaw  = hardwareMap.servo.get("servo_claw");
         servoClaw.setPosition(0.3);
 
-        servoBlock  = hardwareMap.servo.get("shooter_block");
-        servoBlock.setPosition(-0.5);
+
     }
 
     public DcMotor getShooterMotor() {
