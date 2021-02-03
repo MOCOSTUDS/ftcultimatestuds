@@ -20,7 +20,7 @@ public class BlueLeftAutoMode extends LinearOpMode {
         Thread shooterThread = new Thread(shooterUpdate);
         shooterThread.start();
 
-        studbot.getDrive().bornIn(10, 0, -85);
+        studbot.getDrive().bornIn(10, 0, -90);
 
 
         //shooterUpdate.maintainSpeedModeStart(0.9);
@@ -29,12 +29,30 @@ public class BlueLeftAutoMode extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            /*
+            studbot.ppMove (6,107,-90);
+            telemetry.addData("p1 = ", studbot.x1+","+studbot.y1);
+            telemetry.addData("p2 = ", studbot.x2+","+studbot.y2);
+            telemetry.addData("vector = ", studbot.vectorX+","+studbot.vectorY);
+            telemetry.addData("rabbit = ", studbot.rabbitX+","+studbot.rabbitY);
+            telemetry.addData("vert , hori, pivot = ", studbot.ppvertical+","+studbot.pphorizontal+","+studbot.pppivot);
+            telemetry.addData("current x,y = ", studbot.currentX+","+studbot.currentY);
+            telemetry.update();
+            Thread.sleep(10000);
+
+*/
             studbot.simpleMove(10, 10, -90.0);
-            studbot.pivotAndElevate(8,3670);
+            studbot.pivotAndElevate(0,3670);
             //studbot.simpleMove(10, 30, 0);
-            studbot.simpleTankMove (100, 0.4, 0);
-            Thread.sleep(5000);
-            studbot.pivotAndElevate(-90,3670);
+
+
+
+            studbot.simpleTankMove (82, 0.6, 0);
+
+            //studbot.ppMove (6,107,-90);
+
+            //Thread.sleep(5000);
+            studbot.pivotAndElevateFast(-90,3670);
             /*
             studbot.simpleMove(15, 30, -90.0);
             studbot.simpleMove(15, 60, -90.0);
@@ -51,23 +69,41 @@ public class BlueLeftAutoMode extends LinearOpMode {
             telemetry.update();
 
             studbot.arm.dropBobber();
+            studbot.getArm().moveUp();
+            //Thread.sleep(800);
             shooterUpdate.maintainSpeedModeStart(1.8);
-            studbot.simpleMove(10, 63, -90); //previous y was 60
+            studbot.pivotAndElevateFast(0,3670);
+            studbot.simpleTankMove (43, -0.6, 0);
+            //studbot.simpleMove(10, 63, 0); //previous y was 60
 
             //studbot.accuratePivot(20);
             studbot.pivotAndElevate(28,3670);
             //studbot.moveToShoot(3760); // previous was 3730
-            int i;
-            for (i = 0; i < 4; i++) {
-                studbot.getShooter().setClawShoot();
-                Thread.sleep(800);
-                studbot.getShooter().setClawOpen();
-                Thread.sleep(800);
-                studbot.getIntake().setFeed();
-            }
-            studbot.simpleTankMove(5, 1);
-            studbot.accuratePivot(5);
-            studbot.getArm().moveUp();
+
+            //ring1
+            studbot.getShooter().setClawShoot();
+            Thread.sleep(800);
+            studbot.getShooter().setClawOpen();
+            Thread.sleep(800);
+            studbot.getIntake().setFeed();
+
+            //ring2
+            studbot.getShooter().setClawShoot();
+            Thread.sleep(800);
+            studbot.getShooter().setClawOpen();
+            Thread.sleep(1800);
+
+            //ring3
+            studbot.pivotAndElevate(28,3770);
+            studbot.getShooter().setClawShoot();
+            Thread.sleep(800);
+            studbot.getShooter().setClawOpen();
+            Thread.sleep(1800);
+
+
+            studbot.simpleTankMove(10, 1);
+            studbot.accuratePivot(0);
+            //studbot.getArm().moveUp();
             studbot.getElevator().moveToPickup();
 
             telemetry.addData("Velocity", shooterUpdate.returnVelocity());

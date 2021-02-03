@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "Blue Left Teleop")
+@TeleOp(name = "Blue Teleop")
 public class BlueLeftTeleop extends LinearOpMode {
 
     StudBot studbot = new StudBot();
@@ -124,13 +124,15 @@ public class BlueLeftTeleop extends LinearOpMode {
                 studbot.pivotAndElevate(27,3330);
             }
 
-
+            if (gamepad2.start) {
+                studbot.pivotAndElevate(10,3462);
+            }
 
             /***************************************************************************************************
              * gamepad 1
              ****************************************************************************************************/
 
-            if (gamepad1.x) {
+            if (gamepad1.x || gamepad2.a) {
                 studbot.getIntake().setBack();
             } else {
                 studbot.getIntake().setFeed();

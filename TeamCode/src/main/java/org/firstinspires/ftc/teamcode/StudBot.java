@@ -25,6 +25,7 @@ public class StudBot {
     //public float arm_zero_position=0;
     double vertical,horizontal,pivot = 0.0;
 
+    double rabbit = 10;
 
 
     // odometry stuff
@@ -58,6 +59,26 @@ public class StudBot {
     StudIMU imu = new StudIMU();
 
 
+
+
+
+
+    public double x1 ;
+    public double y1 ;
+    public double x2 ;
+    public double y2 ;
+
+    public double distance ;
+    public double vectorX ;
+    public double vectorY ;
+
+    public double rabbitX ;
+    public double rabbitY ;
+
+    public  double ppvertical, pphorizontal, pppivot;
+
+    public double currentX;
+    public double currentY;
 
     public void init(HardwareMap hardwareMap) {
 
@@ -208,6 +229,71 @@ public class StudBot {
         getDrive().stopRobot();
     }
 
+    public void ppMove (double desiredX, double desiredY, double desiredHeading){
+        //getDrive().accuratePIDMove();
+        //getDrive().setTargetfromOrgin(desiredX, desiredY, desiredHeading);
+
+        x1 = getDrive().xOffset;
+        y1 = getDrive().yOffset;
+         x2 = desiredX;
+         y2 = desiredY;
+
+         distance = Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+         vectorX = (x2-x1)/distance;
+         vectorY = (y2-y1)/distance;
+
+         rabbitX = x1;
+         rabbitY = y1;
+
+        double distanceFromRabbit = 0;
+
+
+
+        double myDistance=1e10;
+
+        while (myDistance>4) {
+            currentX = globalPositionUpdate.returnXCoordinateInInches()+getDrive().xOffset;
+            currentY = globalPositionUpdate.returnYCoordinateInInches()+getDrive().yOffset;
+            while (distanceFromRabbit<rabbit){
+                rabbitX += vectorX;
+                rabbitY += vectorY;
+
+                distanceFromRabbit = Math.sqrt((rabbitX-currentX)*(rabbitX-currentX)+(rabbitY-currentY)*(rabbitY-currentY));
+            }
+
+
+
+            //getDrive().setTargetfromOrgin(rabbitX, rabbitY, desiredHeading);
+
+            ppvertical = -(rabbitX - currentX)/rabbit;
+            pphorizontal = (rabbitY - currentY)/rabbit;
+            pppivot = (desiredHeading-(getIMU().getZAngle() + getDrive().headingOffset))/100;
+
+            double h = -getIMU().getZAngle();
+            double newHorizontal = pphorizontal *Math.cos(Math.toRadians(h))
+                    - ppvertical*Math.sin(Math.toRadians(h));
+
+            double newVertical = pphorizontal*Math.sin(Math.toRadians(h))
+                    +ppvertical*Math.cos(Math.toRadians(h)) ;
+
+            double newPivot = pivot ;
+
+
+            myDistance=  Math.sqrt(
+                    (getDrive().targetX-currentX)* (getDrive().targetX-currentX)+
+                            (getDrive().targetY-currentY)* (getDrive().targetY-currentY));
+                    //getDrive().teleDrive(ppvertical,pphorizontal,pppivot);
+            getDrive().teleDrive(newVertical, newHorizontal, newPivot);
+                    myDistance = 0;
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        getDrive().stopRobot();
+    }
+
     public void simpleTankMove (double in, double speed) {
         double myDistance = 0;
         double startx = globalPositionUpdate.returnXCoordinateInInches();
@@ -238,9 +324,9 @@ public class StudBot {
             currentx = globalPositionUpdate.returnXCoordinateInInches();
             currenty = globalPositionUpdate.returnYCoordinateInInches();
             if (heading>getIMU().getZAngle() + getDrive().headingOffset)
-                getDrive().tankMove (speed,0.3);
+                getDrive().tankMove (speed,0.1);
             else
-                getDrive().tankMove (speed,-0.3);
+                getDrive().tankMove (speed,-0.1);
             myDistance = Math.sqrt(
                     (startx-currentx)*(startx-currentx) +  (starty-currenty)*(starty-currenty));
 
@@ -302,7 +388,23 @@ public class StudBot {
         getDrive().stopRobot();
     }
 
+    public void pivotAndElevateFast (double desiredHeading, float desiredElevation){
+        getDrive().accuratePIDTeleop();
+        getDrive().setTargetfromOrginHeading(desiredHeading+getDrive().heading_correction);
+        getElevator().setTarget(desiredElevation);
 
+
+        getDrive().iteration=0;
+
+        while (getDrive().iteration<50) {
+
+
+            getDrive().pivot(
+                    getIMU().getZAngle() + getDrive().headingOffset);
+            getElevator().movePID();
+        }
+        getDrive().stopRobot();
+    }
 
 
 }

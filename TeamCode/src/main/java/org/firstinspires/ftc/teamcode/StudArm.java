@@ -98,7 +98,7 @@ public class StudArm {
 
 
     public void moveUp(){
-        arm.setPower(-0.2);
+        arm.setPower(-0.4);
         while (!inStartingPostion()){
 
             //telemetry.addData("armPostion", getarmPosition());
