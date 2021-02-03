@@ -243,6 +243,29 @@ public class StudDrive {
         return(0);
     }
 
+    public double tankMoveHoriz (double speed,double pivot){
+
+        double horizontal= speed;
+        double vertical = 0;
+        //double pivot = 0;
+
+        double rightFrontPower = -1.0*pivot + ( vertical + horizontal);
+        double rightRearPower = -1.0*pivot + ( vertical - horizontal);
+        double leftFrontPower = 1.0*pivot + ( vertical - horizontal);
+        double leftRearPower = 1.0*pivot + ( vertical + horizontal);
+
+
+        leftFrontPower    = Range.clip(leftFrontPower, -1.0, 1.0) ;
+        leftRearPower    = Range.clip(leftRearPower, -1.0, 1.0) ;
+        rightFrontPower    = Range.clip(rightFrontPower, -1.0, 1.0) ;
+        rightRearPower    = Range.clip(rightRearPower, -1.0, 1.0) ;
+
+        // Send calculated power to wheels
+        setPower(leftFrontPower,rightFrontPower,rightRearPower,leftRearPower);
+
+        return(0);
+    }
+
 
 
 

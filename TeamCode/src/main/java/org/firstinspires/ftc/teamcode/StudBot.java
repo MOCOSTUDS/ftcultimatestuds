@@ -335,6 +335,27 @@ public class StudBot {
     }
 
 
+    public void simpleTankMoveHoriz (double in, double speed, double heading) {
+        double myDistance = 0;
+        double startx = globalPositionUpdate.returnXCoordinateInInches();
+        double starty = globalPositionUpdate.returnYCoordinateInInches();
+        double currentx = globalPositionUpdate.returnXCoordinateInInches();
+        double currenty = globalPositionUpdate.returnYCoordinateInInches();
+        while (myDistance<in) {
+
+            currentx = globalPositionUpdate.returnXCoordinateInInches();
+            currenty = globalPositionUpdate.returnYCoordinateInInches();
+            if (heading>getIMU().getZAngle() + getDrive().headingOffset)
+                getDrive().tankMoveHoriz (speed,0.1);
+            else
+                getDrive().tankMoveHoriz (speed,-0.1);
+            myDistance = Math.sqrt(
+                    (startx-currentx)*(startx-currentx) +  (starty-currenty)*(starty-currenty));
+
+        }
+        getDrive().stopRobot();
+    }
+
     public void simplePivot (double desiredHeading){
 
         getDrive().fastPID();

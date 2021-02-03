@@ -149,6 +149,17 @@ public class StudArm {
         arm.setPower(0);
 
     }
+
+    public void releaseLoop(){
+        servoLoop.setPower(1);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        servoLoop.setPower(0);
+    }
+
     public void dropBobber(){
         // set power to open arm
         servoLoop.setPower(1);

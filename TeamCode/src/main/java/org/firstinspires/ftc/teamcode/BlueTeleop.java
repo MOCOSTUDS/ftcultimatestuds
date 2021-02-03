@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
 @TeleOp(name = "Blue Teleop")
-public class BlueLeftTeleop extends LinearOpMode {
+public class BlueTeleop extends LinearOpMode {
 
     StudBot studbot = new StudBot();
     boolean was_pressed=false;
