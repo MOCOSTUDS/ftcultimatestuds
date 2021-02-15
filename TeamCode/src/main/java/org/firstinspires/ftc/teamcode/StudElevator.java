@@ -45,7 +45,7 @@ public class StudElevator {
             e.printStackTrace();
         }
         //going up
-        elevator.setPower(-0.4);
+        elevator.setPower(-0.2);
         while(digIn0.getState()) {
             elevator.setPower(-0.4);
         }
@@ -74,6 +74,10 @@ public class StudElevator {
         }
     }
 
+    public void stop(){
+        elevator.setPower(0);
+
+    }
 
 
     public void moveToShoot(double azum) {
@@ -137,7 +141,7 @@ public class StudElevator {
 
     public double movePID (){
 
-        pid.setPID(0.01,0.005,0.04);
+        pid.setPID(0.003,0.001,0.00);
         double vertical = pid.getOutput(elevator.getCurrentPosition() - elevator_zero_position , targetElevator);
 
         vertical = Range.clip(vertical, -1.0, 1.0) ;
@@ -149,6 +153,9 @@ public class StudElevator {
     }
 
 
+    public DcMotor getElevatorMotor() {
+        return  elevator;
+    }
 
     public void moveToPickup(){
         //going up

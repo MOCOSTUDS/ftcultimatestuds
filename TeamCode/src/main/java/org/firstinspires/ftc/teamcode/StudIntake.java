@@ -20,7 +20,12 @@ public class StudIntake {
 
     public void setFeed() {
         servoIntake.setPower(-1);
-        intakeWheels.setPower(0.5);
+        intakeWheels.setPower(1);
+        intakeBelt.setPower(-1);
+    }
+    public void setShooterIntakesBack() {
+        servoIntake.setPower(-1);
+        //intakeWheels.setPower(1);
         intakeBelt.setPower(-1);
     }
 
@@ -29,11 +34,21 @@ public class StudIntake {
         intakeWheels.setPower(-0.5);
         intakeBelt.setPower(1);
     }
+    public void setFrontIntakeBack() {
+        //servoIntake.setPower(1);
+        intakeWheels.setPower(-1);
+        //intakeBelt.setPower(1);
+    }
 
     public void stopAll() {
         servoIntake.setPower(0);
         intakeBelt.setPower(0);
         intakeWheels.setPower(0);
+    }
+    public void setBeltIntakeBack() {
+        //servoIntake.setPower(1);
+        //intakeWheels.setPower(-1);
+        intakeBelt.setPower(1);
     }
 
 

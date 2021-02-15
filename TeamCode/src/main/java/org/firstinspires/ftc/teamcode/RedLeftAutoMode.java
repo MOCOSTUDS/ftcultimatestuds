@@ -30,7 +30,7 @@ public class RedLeftAutoMode extends LinearOpMode {
         while (opModeIsActive()) {
             shooterUpdate.maintainSpeedModeStart(1.8);
             studbot.simpleMove(48, 55, -90.0);
-            studbot.pivotAndElevate(25,3700);
+            studbot.pivotAndElevate(23,3700);
 
             //ring1
             studbot.getShooter().setClawShoot();
@@ -54,8 +54,9 @@ public class RedLeftAutoMode extends LinearOpMode {
             Thread.sleep(1200);
             studbot.getShooter().setClawOpen();
             //Thread.sleep(1000);
-
-            studbot.accuratePivot(0);
+            studbot.getIntake().setBack();
+            studbot.pivotAndElevateFast(0,3700);
+            //studbot.accuratePivot(0);
             studbot.simpleTankMove(43,0.8,0);
             studbot.simpleTankMoveHoriz(28,-0.8,0);
             //studbot.simpleMove(48, 100, -90.0);
@@ -63,12 +64,13 @@ public class RedLeftAutoMode extends LinearOpMode {
 
             studbot.arm.dropBobber();
             shooterUpdate.maintainSpeedModeStart(1.8);
-            studbot.simpleTankMoveHoriz(25,0.8,0);
-            studbot.simpleTankMove(26,-1,0);
+            studbot.simpleTankMoveHoriz(36,0.8,0);
+            studbot.simpleTankMove(30,-1,0);
             studbot.accuratePivot(0);
             studbot.getArm().moveUp();
 
             studbot.getElevator().moveToPickup();
+            studbot.getArm().openLoop();
 
             telemetry.addData("Velocity", shooterUpdate.returnVelocity());
             //telemetry.addData("Power", shooterUpdate.returnPower());

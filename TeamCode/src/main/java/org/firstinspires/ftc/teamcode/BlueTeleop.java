@@ -125,7 +125,7 @@ public class BlueTeleop extends LinearOpMode {
             }
 
             if (gamepad2.start) {
-                studbot.pivotAndElevate(10,3462);
+                studbot.pivotAndElevate(10,3500);
             }
 
             /***************************************************************************************************
@@ -147,6 +147,9 @@ public class BlueTeleop extends LinearOpMode {
                     studbot.getArm().arm.setPower(0);
                 }
 
+            if (gamepad1.start && gamepad1.back){
+                studbot.getDrive().heading_correction = +((float)studbot.getIMU().getZAngle());
+            }
 
             if (gamepad1.right_trigger>0.1){
                 studbot.getArm().servoLoop.setPower(-1);
@@ -160,7 +163,7 @@ public class BlueTeleop extends LinearOpMode {
             double vertical = -1.0 * gamepad1.left_stick_x;
             double horizontal = gamepad1.left_stick_y;
             double pivot = gamepad1.right_stick_x;
-            double h = -studbot.getIMU().getZAngle();
+            double h = -studbot.getIMU().getZAngle()+studbot.getDrive().heading_correction;
             double newHorizontal = horizontal *Math.cos(Math.toRadians(h))
                     - vertical*Math.sin(Math.toRadians(h));
 

@@ -57,7 +57,7 @@ public class StudBot {
     StudElevator elevator = new StudElevator();
     StudArm arm = new StudArm();
     StudIMU imu = new StudIMU();
-
+    StudCam cam = new StudCam();
 
 
 
@@ -89,6 +89,7 @@ public class StudBot {
         elevator.init(hardwareMap);
         arm.init(hardwareMap);
         imu.init(hardwareMap);
+        cam.init(hardwareMap);
 /*
         digIn1 = hardwareMap.get(DigitalChannel.class, "switch1"); //false is not pressed
         digIn1.setMode(DigitalChannel.Mode.INPUT);
@@ -381,7 +382,22 @@ public class StudBot {
 
         getDrive().iteration=0;
 
-        while (getDrive().iteration<150) {
+        while (getDrive().iteration<100) {
+
+
+            getDrive().pivot(
+                    getIMU().getZAngle() + getDrive().headingOffset);
+        }
+        getDrive().stopRobot();
+    }
+
+    public void accurateFastPivot (double desiredHeading){
+        getDrive().accuratePID();
+        getDrive().setTargetfromOrginHeading(desiredHeading);
+
+        getDrive().iteration=0;
+
+        while (getDrive().iteration<50) {
 
 
             getDrive().pivot(
@@ -406,6 +422,7 @@ public class StudBot {
                     getIMU().getZAngle() + getDrive().headingOffset);
             getElevator().movePID();
         }
+        getElevator().stop();
         getDrive().stopRobot();
     }
 
@@ -425,6 +442,7 @@ public class StudBot {
             getElevator().movePID();
         }
         getDrive().stopRobot();
+        getElevator().stop();
     }
 
 

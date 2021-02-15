@@ -41,10 +41,9 @@ public class StudIMU {
 
     }
 
-    public double getZAngle(){
+    public double getZAngle() {
         return (-imu.getAngularOrientation().firstAngle);
     }
-
 
 }
 

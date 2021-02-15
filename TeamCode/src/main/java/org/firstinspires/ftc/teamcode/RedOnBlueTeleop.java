@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "Blue Teleop")
-public class BlueTeleop extends LinearOpMode {
+@TeleOp(name = "Red Team Blue Side Teleop")
+public class RedOnBlueTeleop extends LinearOpMode {
 
     StudBot studbot = new StudBot();
     boolean was_pressed=false;
@@ -70,8 +70,82 @@ public class BlueTeleop extends LinearOpMode {
                 studbot.getElevator().servoBlock.setPosition(-0.5);
 
             }
+            if (gamepad2.right_trigger > 0.2) {
+                studbot.getShooter().setClawShoot();
+            } else {
+                studbot.getShooter().setClawOpen();
+            }
+            studbot.getElevator().moveElevator(-(gamepad2.right_stick_y * gamepad2.right_stick_y * gamepad2.right_stick_y));
+            // handle elevator
+            if (studbot.getElevator().readyToShoot()) {
+                shooterUpdate.maintainSpeedModeStart(2.0);
+                studbot.getElevator().servoBlock.setPosition(0.3);
+            } else {
+                //shooterUpdate.setBackMode();
+                shooterUpdate.maintainSpeedModeStart(2.0);
+                studbot.getElevator().servoBlock.setPosition(-0.5);
+
+            }
 
 
+            if (gamepad2.left_bumper && !was_pressed) {
+                studbot.getDrive().heading_correction -= 4;
+                studbot.pivotAndElevate(0,3756);
+                was_pressed = true;
+            }
+            if (gamepad2.right_bumper && !was_pressed) {
+                studbot.getDrive().heading_correction += 4;
+                studbot.pivotAndElevate(0,3756);
+                was_pressed = true;
+            }
+            if (!gamepad2.left_bumper && !gamepad2.right_bumper)
+                was_pressed = false;
+
+            if (gamepad2.dpad_right && gamepad2.x) {
+                studbot.pivotAndElevate(-7.5,3774);
+            }
+
+            if (gamepad2.dpad_up && gamepad2.x) {
+                studbot.pivotAndElevate(10,3772);
+            }
+
+            if (gamepad2.dpad_left && gamepad2.x) {
+                studbot.pivotAndElevate(35,3796);
+            }
+
+            if (gamepad2.dpad_right && gamepad2.y) {
+                studbot.pivotAndElevate(-1.5,3680);
+            }
+
+            if (gamepad2.dpad_up && gamepad2.y) {
+                studbot.pivotAndElevate(12,3680);
+            }
+
+            if (gamepad2.dpad_left && gamepad2.y) {
+                studbot.pivotAndElevate(25,3612);
+            }
+
+            if (gamepad2.dpad_right && gamepad2.b) {
+                studbot.pivotAndElevate(-5,3400);
+            }
+            if (gamepad2.dpad_up && gamepad2.b) {
+                studbot.pivotAndElevate(12, 3400);
+            }
+
+            if (gamepad2.dpad_left && gamepad2.b) {
+                studbot.pivotAndElevate(14,3370);
+            }
+
+            if (gamepad2.dpad_down && gamepad2.b) {
+                studbot.pivotAndElevate(-7,3330);
+            }
+
+            if (gamepad2.start) {
+                studbot.pivotAndElevate(10,3462);
+            }
+
+
+        /*
             if (gamepad2.left_bumper && !was_pressed) {
                 studbot.getDrive().heading_correction -= 4;
                 studbot.pivotAndElevate(0,3756);

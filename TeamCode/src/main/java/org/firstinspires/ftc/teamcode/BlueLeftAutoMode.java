@@ -98,13 +98,13 @@ public class BlueLeftAutoMode extends LinearOpMode {
             studbot.getShooter().setClawShoot();
             Thread.sleep(800);
             studbot.getShooter().setClawOpen();
-            Thread.sleep(1800);
 
-
+            studbot.getIntake().setBack();
             studbot.simpleTankMove(10, 1);
             studbot.accuratePivot(0);
             //studbot.getArm().moveUp();
             studbot.getElevator().moveToPickup();
+            studbot.getArm().openLoop();
 
             telemetry.addData("Velocity", shooterUpdate.returnVelocity());
             //telemetry.addData("Power", shooterUpdate.returnPower());

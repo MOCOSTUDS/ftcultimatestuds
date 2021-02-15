@@ -30,7 +30,7 @@ public class ShooterBeltSpeedVelocity implements Runnable{
 
     private String mode = "IDLE";
 
-    public double pValue = 0.1;
+    public double pValue = 0.15;//0.10
     public double iValue = 0.02;
     public double dValue = 0.00;
 

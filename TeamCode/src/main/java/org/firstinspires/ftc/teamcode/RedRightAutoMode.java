@@ -105,6 +105,7 @@ public class RedRightAutoMode extends LinearOpMode {
             studbot.getShooter().setClawOpen();
             Thread.sleep(1000);
 
+            studbot.getIntake().setBack();
             studbot.pivotAndElevate(0,3770);
             studbot.simpleTankMove(5, 1, 0);
             studbot.accuratePivot(0);

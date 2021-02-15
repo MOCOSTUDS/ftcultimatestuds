@@ -2,217 +2,149 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import java.util.List;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 
-@TeleOp(name = "Blue Teleop")
-public class BlueTeleop extends LinearOpMode {
+@TeleOp(name = "tensor test")
+public class tensorTest extends LinearOpMode {
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
 
-    StudBot studbot = new StudBot();
-    boolean was_pressed=false;
+    /*
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * web site at https://developer.vuforia.com/license-manager.
+     *
+     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * random data. As an example, here is a example of a fragment of a valid key:
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * Once you've obtained a license key, copy the string from the Vuforia web site
+     * and paste it in to your code on the next line, between the double quotes.
+     */
+    private static final String VUFORIA_KEY =
+            "AdUb35L/////AAABmRvLTWKDkUCtiR+XIKPqagcuwUCwyQjRG79vGuoovT1yInddk+tLIL7cRoa4nXq5QtV/Db/Vr2oAKcK4N6b+P36dRXQo66pP8FueLxMGRlSgFLVvV5/jPpnvwxA4NNXBtNhhGDARdYjDfF90SegvSr8uCOrvJpuXsV6rtgpovED/q+IMSY6KUNS+K16lgIX2Ox+TuMfVlnLVMP4BXdFpjb0FJ9c1cj55GE3c779f4EOznTqwy6r08IBDnpcacOfymkwAi2Lsbe5WJJ0XdrhrqC94UEVx27lISzZtHDn0OjRnmQWcEH+vNyQ33s3V8yNftiUx0m+aCYtqINaeqlXBBzMvzwJFmyF8IW7B8b3ULfpu";
 
+    /**
+     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * localization engine.
+     */
+    private VuforiaLocalizer vuforia;
+
+    /**
+     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
+     * Detection engine.
+     */
+    private TFObjectDetector tfod;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-
-        studbot.init(hardwareMap);
-        waitForStart();
-        ShooterBeltSpeedVelocity shooterUpdate = new ShooterBeltSpeedVelocity(studbot.getShooter(), 100);
-        Thread shooterThread = new Thread(shooterUpdate);
-
-        shooterThread.start();
-
+    public void runOpMode() {
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // first.
+        initVuforia();
+        initTfod();
 
         /**
-         * *****************
-         * OpMode Begins Here
-         * *****************
-         */
-        //Create and start GlobalCoordinatePosition thread to constantly update the global coordinate positions\
-        /*
-        OdometryGlobalCoordinatePosition globalPositionUpdate =
-                new OdometryGlobalCoordinatePosition(studbot.verticalLeft,
-                        studbot.verticalRight, studbot.horizontalRight, studbot.getDrive().COUNTS_PER_INCH, 75);
+         * Activate TensorFlow Object Detection before we wait for the start command.
+         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+         **/
+        if (tfod != null) {
+            tfod.activate();
 
+            // The TensorFlow software will scale the input images from the camera to a lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+            // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
+            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // (typically 1.78 or 16/9).
 
-
-        Thread positionThread = new Thread(globalPositionUpdate);
-        globalPositionUpdate.reverseRightEncoder();
-        globalPositionUpdate.reverseNormalEncoder();
-        positionThread.start();
-*/
-        studbot.getDrive().bornIn(10, 0, 0);
-
-
-        shooterUpdate.maintainSpeedModeStart(1.8);
-        //studbot.getIntake().stopAll();
-        //studbot.getElevator().moveToShoot(3600);
-        //shooterUpdate.stop();
-        while (opModeIsActive()) {
-
-
-            /***************************************************************************************************
-             * gamepad 2
-             ****************************************************************************************************/
-
-            if (gamepad2.right_trigger > 0.2) {
-                studbot.getShooter().setClawShoot();
-            } else {
-                studbot.getShooter().setClawOpen();
-            }
-            studbot.getElevator().moveElevator(-(gamepad2.right_stick_y * gamepad2.right_stick_y * gamepad2.right_stick_y));
-            // handle elevator
-            if (studbot.getElevator().readyToShoot()) {
-                shooterUpdate.maintainSpeedModeStart(2.0);
-                studbot.getElevator().servoBlock.setPosition(0.3);
-            } else {
-                //shooterUpdate.setBackMode();
-                shooterUpdate.maintainSpeedModeStart(2.0);
-                studbot.getElevator().servoBlock.setPosition(-0.5);
-
-            }
-
-
-            if (gamepad2.left_bumper && !was_pressed) {
-                studbot.getDrive().heading_correction -= 4;
-                studbot.pivotAndElevate(0,3756);
-                was_pressed = true;
-            }
-            if (gamepad2.right_bumper && !was_pressed) {
-                studbot.getDrive().heading_correction += 4;
-                studbot.pivotAndElevate(0,3756);
-                was_pressed = true;
-            }
-            if (!gamepad2.left_bumper && !gamepad2.right_bumper)
-                was_pressed = false;
-
-            if (gamepad2.dpad_left && gamepad2.x) {
-                studbot.pivotAndElevate(35,3774);
-            }
-
-            if (gamepad2.dpad_up && gamepad2.x) {
-                studbot.pivotAndElevate(10,3772);
-            }
-
-            if (gamepad2.dpad_right && gamepad2.x) {
-                studbot.pivotAndElevate(-7.5,3800);
-            }
-
-            if (gamepad2.dpad_left && gamepad2.y) {
-                studbot.pivotAndElevate(25,3680);
-            }
-
-            if (gamepad2.dpad_up && gamepad2.y) {
-                studbot.pivotAndElevate(12,3680);
-            }
-
-            if (gamepad2.dpad_right && gamepad2.y) {
-                studbot.pivotAndElevate(-1.7,3612);
-            }
-
-            if (gamepad2.dpad_left && gamepad2.b) {
-                studbot.pivotAndElevate(25,3400);
-            }
-            if (gamepad2.dpad_up && gamepad2.b) {
-                studbot.pivotAndElevate(12,3400);
-            }
-
-            if (gamepad2.dpad_right && gamepad2.b) {
-                studbot.pivotAndElevate(14,3370);
-            }
-
-            if (gamepad2.dpad_down && gamepad2.b) {
-                studbot.pivotAndElevate(27,3330);
-            }
-
-            if (gamepad2.start) {
-                studbot.pivotAndElevate(10,3500);
-            }
-
-            /***************************************************************************************************
-             * gamepad 1
-             ****************************************************************************************************/
-
-            if (gamepad1.x || gamepad2.a) {
-                studbot.getIntake().setBack();
-            } else {
-                studbot.getIntake().setFeed();
-            }
-
-            if (gamepad1.left_trigger>0.1){
-                studbot.getArm().arm.setPower(0.6);
-            }else
-                if (gamepad1.left_bumper){
-                    studbot.getArm().arm.setPower(-0.6);
-                }else{
-                    studbot.getArm().arm.setPower(0);
-                }
-
-            if (gamepad1.start && gamepad1.back){
-                studbot.getDrive().heading_correction = +((float)studbot.getIMU().getZAngle());
-            }
-
-            if (gamepad1.right_trigger>0.1){
-                studbot.getArm().servoLoop.setPower(-1);
-            }else
-                if (gamepad1.right_bumper){
-                    studbot.getArm().servoLoop.setPower(1);
-                }else{
-                    studbot.getArm().servoLoop.setPower(0);
-                }
-
-            double vertical = -1.0 * gamepad1.left_stick_x;
-            double horizontal = gamepad1.left_stick_y;
-            double pivot = gamepad1.right_stick_x;
-            double h = -studbot.getIMU().getZAngle()+studbot.getDrive().heading_correction;
-            double newHorizontal = horizontal *Math.cos(Math.toRadians(h))
-                    - vertical*Math.sin(Math.toRadians(h));
-
-            double newVertical = horizontal*Math.sin(Math.toRadians(h))
-                    +vertical*Math.cos(Math.toRadians(h)) ;
-
-            double newPivot = pivot ;
-            studbot.getDrive().teleDrive(newVertical, newHorizontal, newPivot);
-
-
-            /*
-            if (gamepad2.start) {
-                studbot.arm.dropBobber();
-            }
-*/
-            telemetry.addData("imu offset", studbot.getDrive().heading_correction);
-
-            telemetry.addData("Velocity", shooterUpdate.returnVelocity());
-            //telemetry.addData("Power", shooterUpdate.returnPower());
-            //telemetry.addData("Thread Active", shooterThread.isAlive());
-            //telemetry.addData("switch0", studbot.getElevator().digIn0.getState());
-            //telemetry.addData("switch1=", studbot.getArm().digIn1.getState());
-            //telemetry.addData("detaltT=", shooterUpdate.getLastTime());
-            telemetry.addData("elevator=", studbot.getElevator().getElevatorPosition() - studbot.getElevator().elevator_zero_position);
-
-            telemetry.addData("X Position", studbot.globalPositionUpdate.returnXCoordinateInInches());
-            telemetry.addData("Y Position", studbot.globalPositionUpdate.returnYCoordinateInInches());
-            telemetry.addData("Orientation (Degrees)", studbot.globalPositionUpdate.returnOrientation());
-            //telemetry.addData("Thread Active", positionThread.isAlive());
-
-            //telemetry.addData("vertical left", studbot.verticalLeft.getCurrentPosition());
-            //telemetry.addData("vertical right", studbot.verticalRight.getCurrentPosition());
-            //telemetry.addData("horizontal", studbot.horizontalRight.getCurrentPosition());
-
-            telemetry.addData("armPostion", studbot.getArm().getarmPosition());
-            telemetry.addData("imuAngle", studbot.getIMU().getZAngle());
-
-            //telemetry.addData("servoBlock:", studbot.getShooter().servoBlock);
-
-            //telemetry.update();
-           // telemetry.addData("iteration: ", studbot.getDrive().iteration);
-            //telemetry.addData("ready to shoot",studbot.getElevator().readyToShoot());
-            telemetry.update();
-
+            // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
+            //tfod.setZoom(2.5, 1.78);
         }
-        //Stop the thread
-        shooterUpdate.stop();
-        studbot.getIntake().stopAll();
 
+        /** Wait for the game to begin */
+        telemetry.addData(">", "Press Play to start op mode");
+        telemetry.update();
+        waitForStart();
 
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        if (updatedRecognitions.size() == 0 ) {
+                            // empty list.  no objects recognized.
+                            telemetry.addData("TFOD", "No items detected.");
+                            telemetry.addData("Target Zone", "A");
+                        } else {
+                            // list is not empty.
+                            // step through the list of recognitions and display boundary info.
+                            int i = 0;
+                            for (Recognition recognition : updatedRecognitions) {
+                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                        recognition.getLeft(), recognition.getTop());
+                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                        recognition.getRight(), recognition.getBottom());
+
+                                // check label to see which target zone to go after.
+                                if (recognition.getLabel().equals("Single")) {
+                                    telemetry.addData("Target Zone", "B");
+                                } else if (recognition.getLabel().equals("Quad")) {
+                                    telemetry.addData("Target Zone", "C");
+                                } else {
+                                    telemetry.addData("Target Zone", "UNKNOWN");
+                                }
+                            }
+                        }
+
+                        telemetry.update();
+                    }
+                }
+            }
+        }
+
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+    }
+
+    /**
+     * Initialize the Vuforia localization engine.
+     */
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam");
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 }

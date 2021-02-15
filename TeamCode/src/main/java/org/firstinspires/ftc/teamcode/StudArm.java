@@ -65,7 +65,7 @@ public class StudArm {
     }
 
     public boolean inStartingPostion() {
-        if (arm.getCurrentPosition() - arm_zero_position < 100)
+        if (arm.getCurrentPosition() - arm_zero_position < 300)
             return true;
         return false;
     }

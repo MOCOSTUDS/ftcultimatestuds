@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "Red Teleop")
-public class RedTeleop extends LinearOpMode {
+@TeleOp(name = "Blue Team Red Side Teleop")
+public class BlueOnRedTeleop extends LinearOpMode {
 
     StudBot studbot = new StudBot();
     boolean was_pressed=false;
@@ -70,8 +70,63 @@ public class RedTeleop extends LinearOpMode {
                 studbot.getElevator().servoBlock.setPosition(-0.5);
 
             }
+            if (gamepad2.left_bumper && !was_pressed) {
+                studbot.getDrive().heading_correction -= 4;
+                studbot.pivotAndElevate(0,3756);
+                was_pressed = true;
+            }
+            if (gamepad2.right_bumper && !was_pressed) {
+                studbot.getDrive().heading_correction += 4;
+                studbot.pivotAndElevate(0,3756);
+                was_pressed = true;
+            }
+            if (!gamepad2.left_bumper && !gamepad2.right_bumper)
+                was_pressed = false;
 
+            if (gamepad2.dpad_left && gamepad2.x) {
+                studbot.pivotAndElevate(35,3774);
+            }
 
+            if (gamepad2.dpad_up && gamepad2.x) {
+                studbot.pivotAndElevate(10,3772);
+            }
+
+            if (gamepad2.dpad_right && gamepad2.x) {
+                studbot.pivotAndElevate(-7.5,3800);
+            }
+
+            if (gamepad2.dpad_left && gamepad2.y) {
+                studbot.pivotAndElevate(25,3680);
+            }
+
+            if (gamepad2.dpad_up && gamepad2.y) {
+                studbot.pivotAndElevate(12,3680);
+            }
+
+            if (gamepad2.dpad_right && gamepad2.y) {
+                studbot.pivotAndElevate(-1.7,3612);
+            }
+
+            if (gamepad2.dpad_left && gamepad2.b) {
+                studbot.pivotAndElevate(25,3400);
+            }
+            if (gamepad2.dpad_up && gamepad2.b) {
+                studbot.pivotAndElevate(12,3400);
+            }
+
+            if (gamepad2.dpad_right && gamepad2.b) {
+                studbot.pivotAndElevate(14,3370);
+            }
+
+            if (gamepad2.dpad_down && gamepad2.b) {
+                studbot.pivotAndElevate(27,3330);
+            }
+
+            if (gamepad2.start) {
+                studbot.pivotAndElevate(10,3462);
+            }
+
+        /*
             if (gamepad2.left_bumper && !was_pressed) {
                 studbot.getDrive().heading_correction -= 4;
                 studbot.pivotAndElevate(0,3756);
@@ -127,7 +182,7 @@ public class RedTeleop extends LinearOpMode {
             if (gamepad2.start) {
                 studbot.pivotAndElevate(10,3462);
             }
-
+        */
 
             /***************************************************************************************************
              * gamepad 1
